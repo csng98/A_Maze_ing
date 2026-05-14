@@ -8,15 +8,16 @@ class MazeWindow:
         self.ptr = self.mlx.mlx_init()
         self.player_r: int = 0  # Fila 0
         self.player_c: int = 0  # Columna 0
-        self.exit_r: int = 14
-        self.exit_c: int = 19
+        
         
         # Guardamos el laberinto para poder consultarlo
         self.maze = maze
         self.width = int(config["WIDTH"]) * 50
+        print(config["WIDTH"])
         self.height = int(config["HEIGHT"]) * 50
         self.wall_color: int = 0xFFFFFF
-        
+        self.exit_r: int = int(config["HEIGHT"]) - 1
+        self.exit_c: int = int(config["WIDTH"]) - 1
         self.win = self.mlx.mlx_new_window(self.ptr, self.width, 
                                           self.height, "A-Maze-ing")
         
@@ -99,7 +100,9 @@ class MazeWindow:
         # Multiplicamos por 50 para ir a la celda correcta, 
         # y sumamos 10 para que quede en el centro
         x_pixel: int = (self.exit_c * 50) + 10
+        print(x_pixel)
         y_pixel: int = (self.exit_r * 50) + 10
+        print(y_pixel)
         
         # Un cuadrado rosa :P radiactivo de 30x30
         self.draw_rect(x_pixel, y_pixel, 30, 30, 0xFF00FF)
@@ -134,7 +137,8 @@ class MazeWindow:
         goal_r = (self.height // 50) - 1
 
         # Comparamos nuestra posición con la meta
-        if self.player_c == goal_c and self.player_r == goal_r:
+        print(self.exit_c, self.exit_r)
+        if self.player_c == self.exit_r - 1 and self.player_r == self.exit_c - 1:
             print("¡BINGO! ¡Laberinto completado!")
             self.clean_exit()
 
