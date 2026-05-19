@@ -2,7 +2,8 @@ import sys
 from config_parser import parse_config
 from graphics_engine import MazeWindow
 # Importamos tu nueva clase del archivo mazegen.py
-from mazegen import MazeGenerator 
+from mazegen import MazeGenerator
+
 
 def main() -> None:
     # Verificamos que el usuario nos pase el config.txt
@@ -19,13 +20,14 @@ def main() -> None:
     # Extraemos el tamaño y lo convertimos a entero
     width = int(config_data["WIDTH"])
     height = int(config_data["HEIGHT"])
-    
+    goal = str(config_data["EXIT"])
+
     # Creamos la instancia del generador
     maze = MazeGenerator(height, width)
-    
+
     # Le pedimos que fabrique la cuadrícula llena de paredes
     maze.create_empty_grid()
-    
+
     # Un pequeño mensaje para confirmar que todo va bien
     print(f"Grid initialized with {len(maze.cells)} cells.")
     if width > 10 and height > 10:
@@ -33,9 +35,9 @@ def main() -> None:
     maze.carve_passages(0, 0)
     maze.calculate_hex_for_all()
     # 3. Iniciamos la parte gráfica
-    # Más adelante le pasaremos el objeto 'maze' a la ventana para que sepa qué pintar
-    game = MazeWindow(config_data, maze)
+    game = MazeWindow(config_data, maze, goal)
     game.run()
+
 
 if __name__ == "__main__":
     main()

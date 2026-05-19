@@ -1,26 +1,27 @@
-import sys, random
+import sys
+import random
 from mlx import Mlx
 from typing import Dict, Any, List
 
+
 class MazeWindow:
-    def __init__(self, config: Dict[str, str], maze: Any) -> None:
+    def __init__(self, config: Dict[str, str], maze: Any, goal) -> None:
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
         self.player_r: int = 0  # Fila 0
         self.player_c: int = 0  # Columna 0
-        
-        
+        goal_cords: list[str] = goal.split(',')
+
         # Guardamos el laberinto para poder consultarlo
         self.maze = maze
         self.width = int(config["WIDTH"]) * 50
         print(config["WIDTH"])
         self.height = int(config["HEIGHT"]) * 50
         self.wall_color: int = 0xFFFFFF
-        self.exit_r: int = int(config["HEIGHT"]) - 1
-        self.exit_c: int = int(config["WIDTH"]) - 1
-        self.win = self.mlx.mlx_new_window(self.ptr, self.width, 
-                                          self.height, "A-Maze-ing")
-        
+        self.exit_r: int = int(goal_cords[0]) - 1
+        self.exit_c: int = int(goal_cords[1]) - 1
+        self.win = self.mlx.mlx_new_window(self.ptr, self.width, self.height, "A-Maze-ing")
+
         # Creamos el lienzo invisible (Imagen)
         self.img = self.mlx.mlx_new_image(self.ptr, self.width, self.height)
         
