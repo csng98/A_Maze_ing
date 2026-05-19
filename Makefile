@@ -15,9 +15,12 @@ CONFIG = config.txt
 all: banner install
 
 banner:
-	@echo "$(CYAN)======================================"
-	@echo "           A-MAZE-ING                "
-	@echo "======================================$(RESET)"
+	@echo   " $(CYAN)    ___        __  ___                     _             $(RESET)  "
+	@echo   " $(CYAN)   /   |      /  |/  /___ _____  ___      ( )____  _____ $(RESET)  "
+	@echo   " $(CYAN)  / /| |     / /|_/ / __ '/_  / / _ \     / / __ \/ __ '/ $(RESET)  "
+	@echo   " $(CYAN) / ___ |    / /  / / /_/ / / /_/  __/    / / / / / /_/ /  $(RESET)  "
+	@echo   " $(CYAN)/_/  |_|___/_/  /_/\__,_/ /___/\___/____/_/_/ /_/\__, /   $(RESET)  "
+	@echo   " $(CYAN)       /_____/                    /_____/       /____/    $(RESET)  "
 
 install: $(VENV)/bin/activate
 
