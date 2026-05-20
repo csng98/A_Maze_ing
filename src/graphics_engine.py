@@ -134,12 +134,12 @@ class MazeWindow:
         # 6. Pegamos la actualización en la ventana
         self.mlx.mlx_put_image_to_window(self.ptr, self.win, self.img, 0, 0)
         # Calculamos dinámicamente cuál es la meta
-        goal_c = (self.width // 50) - 1
-        goal_r = (self.height // 50) - 1
+        #goal_c = (self.width // 50) - 1
+        #goal_r = (self.height // 50) - 1
 
         # Comparamos nuestra posición con la meta
         print(self.exit_c, self.exit_r)
-        if self.player_c == goal_c and self.player_r == goal_r:
+        if self.player_c == self.exit_c and self.player_r == self.exit_r:
             print("¡BINGO! ¡Laberinto completado!")
             self.clean_exit()
 

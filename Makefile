@@ -32,8 +32,8 @@ $(VENV)/bin/activate: requirements.txt
 	pid=$$!; \
 	printf "$(CYAN)[$(RESET)"; \
 	while kill -0 $$pid 2>/dev/null; do \
-		printf "$(GREEN)█$(RESET)"; \
-		sleep 0.15; \
+		printf "$(CYAN)▮$(RESET)"; \
+		sleep 0.199; \
 	done; \
 	printf "$(CYAN)]$(RESET)\n"
 	@touch $(VENV)/bin/activate
