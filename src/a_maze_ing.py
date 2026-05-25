@@ -1,7 +1,6 @@
 import sys
 from config_parser import parse_config
 from graphics_engine import MazeWindow
-# Importamos tu nueva clase del archivo mazegen.py
 from mazegen import MazeGenerator
 
 
