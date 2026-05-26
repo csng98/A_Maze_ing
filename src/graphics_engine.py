@@ -1,15 +1,16 @@
 import sys
 import random
 from mlx import Mlx
-from typing import Dict, Any, List, Tuple
-
+from typing import Dict
+from typing import Any
+from typing import List
 
 class MazeWindow:
     """Manages the graphic rendering and keyboard events of the game."""
     def __init__(self, config: Dict[str, str], maze: Any) -> None:
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
-        
+
         # Ajustamos inicio y fin leyendo el config
         entry_cords: List[str] = config["ENTRY"].split(',')
         goal_cords: List[str] = config["EXIT"].split(',')
@@ -101,7 +102,6 @@ class MazeWindow:
             c = path[i][1]
             x_pixel: int = (c * 50) + 20
             y_pixel: int = (r * 50) + 20
-            # Dibujamos unas miguitas azules por el camino
             self.draw_rect(x_pixel, y_pixel, 10, 10, 0x00BFFF)
             i += 1
 
@@ -203,12 +203,20 @@ class MazeWindow:
         self.clean_exit()
 
     def clean_exit(self) -> None:
+        """Stops the MLX loop safely."""
+        # En lugar de matar el programa, le decimos al bucle de C que termine.
+        self.mlx.mlx_loop_exit(self.ptr)
+        
+    def run(self) -> None:
+        """Starts the MLX loop and cleans up memory after it finishes."""
+        self.render_all()
+        
+        # El programa se queda atrapado en esta linea mientras juegas
+        self.mlx.mlx_loop(self.ptr)
+        
+        # --- Cuando llamas a clean_exit(), el bucle de arriba se rompe ---
+        # --- y Python continua leyendo por aqui, cerrando todo limpiamente ---
+        
         self.mlx.mlx_destroy_image(self.ptr, self.img)
         self.mlx.mlx_destroy_window(self.ptr, self.win)
         self.mlx.mlx_release(self.ptr)
-        sys.exit(0)
-        
-    def run(self) -> None:
-        """Starts the MLX loop."""
-        self.render_all()
-        self.mlx.mlx_loop(self.ptr)

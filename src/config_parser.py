@@ -42,22 +42,27 @@ def parse_config(filename: str) -> Dict[str, str]:
 
         width: int = int(config["WIDTH"])
         height: int = int(config["HEIGHT"])
+
+        if width < 0 or height < 0:
+            raise ValueError ("Width and height must be non-negative integers")
         
         exits: List[str] = config["EXIT"].split(',')
         entries: List[str] = config["ENTRY"].split(',')
-        
+
+        exits: int = int(exits[0]), int(exits[1])
+        entries: int = int(entries[0]), int(entries[1])
+
+        if exits[0] == entries[0] and exits[1] == entries[1]:
+            raise ValueError("Entry and exit cannot be the same cell")
+        if entries[0] < 0 or entries[1] < 0:
+            raise ValueError("Entry coordinates must be non-negative integers")
+        if exits[0] < 0 or exits[1] < 0:
+            raise ValueError("Exit coordinates must be non-negative integers")
         if len(exits) != 2 or len(entries) != 2:
             raise ValueError("Invalid ENTRY or EXIT format")
-            
-        exit_c: int = int(exits[0])
-        exit_r: int = int(exits[1])
-        entry_c: int = int(entries[0])
-        entry_r: int = int(entries[1])
-        
-        # GPS de seguridad
-        if exit_c >= width or exit_r >= height:
+        if exits[0] >= width or exits[1] >= height:
             raise ValueError("Exit coordinates are out of bounds")
-        if entry_c >= width or entry_r >= height:
+        if entries[0] >= width or entries[1] >= height:
             raise ValueError("Entry coordinates are out of bounds")
             
         return config

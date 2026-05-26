@@ -31,7 +31,7 @@ def main() -> None:
     
     # ¡El bloqueo del 42 recuperado!
     # Solo se dibuja si el mapa es lo bastante grande para que quepa
-    if width > 10 and height > 10:
+    if width > 8 and height > 6:
         maze.draw_fortytwo()
         
     maze.carve_passages(start_r, start_c)
