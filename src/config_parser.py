@@ -33,7 +33,7 @@ def parse_config(filename: str) -> Dict[str, str]:
         
     try:
         # Comprobamos que el archivo tenga TODO lo necesario
-        required = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE"]
+        required = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"]
         i: int = 0
         while i < len(required):
             if required[i] not in config:
@@ -64,7 +64,13 @@ def parse_config(filename: str) -> Dict[str, str]:
             raise ValueError("Exit coordinates are out of bounds")
         if entries[0] >= width or entries[1] >= height:
             raise ValueError("Entry coordinates are out of bounds")
-            
+        
+        is_perfect: str = config["PERFECT"]
+
+        if is_perfect != "True" and is_perfect != "False":
+            raise ValueError("PERFECT key must be bolean")
+
+        
         return config
 
     except Exception as e:

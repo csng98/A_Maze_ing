@@ -90,12 +90,12 @@ class MazeGenerator:
         while i < len(keys):
             coord = keys[i]
             cell = self.cells[coord]
-            valor: int = 0
-            valor += cell.walls["north"] * 1
-            valor += cell.walls["east"] * 2
-            valor += cell.walls["south"] * 4
-            valor += cell.walls["west"] * 8
-            cell.hex_value = hex_sequence[valor]
+            value: int = 0
+            value += cell.walls["north"] * 1
+            value += cell.walls["east"] * 2
+            value += cell.walls["south"] * 4
+            value += cell.walls["west"] * 8
+            cell.hex_value = hex_sequence[value]
             i += 1
 
     def path_to_directions(self, path: List[Tuple[int, int]]) -> str:
