@@ -54,14 +54,14 @@ debug: install
 # Standard lint verification
 lint: install
 	@echo "$(CYAN)Running standard linting checks (flake8 + mypy)...$(RESET)"
-	@$(PYTHON) -m flake8 .
-	@$(PYTHON) -m mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	@$(PYTHON) -m flake8 . --exclude=venv,src/mlx
+	@$(PYTHON) -m mypy . --exclude="venv|mlx" --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 # Enhanced checking lint target
 lint-strict: install
 	@echo "$(CYAN)Running strict compliance checks (flake8 + mypy --strict)...$(RESET)"
-	@$(PYTHON) -m flake8 .
-	@$(PYTHON) -m mypy . --strict
+	@$(PYTHON) -m flake8 . --exclude=venv,src/mlx
+	@$(PYTHON) -m mypy . --exclude="venv|mlx" --strict
 
 # Cleanup management rules
 
