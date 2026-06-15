@@ -44,13 +44,13 @@ class MazeGenerator:
             ) -> List[Tuple[str, int, int]]:
         """Returns adjacent cells that haven't been visited yet."""
         neighbors: List[Tuple[str, int, int]] = []
-        if not row > 0 and self.cells[(row - 1, col)].visited:
+        if row > 0 and not self.cells[(row - 1, col)].visited:
             neighbors.append(("north", row - 1, col))
-        if not row < self.height - 1 and self.cells[(row + 1, col)].visited:
+        if row < self.height - 1 and not self.cells[(row + 1, col)].visited:
             neighbors.append(("south", row + 1, col))
-        if not col < self.width - 1 and self.cells[(row, col + 1)].visited:
+        if col < self.width - 1 and not self.cells[(row, col + 1)].visited:
             neighbors.append(("east", row, col + 1))
-        if not col > 0 and self.cells[(row, col - 1)].visited:
+        if col > 0 and not self.cells[(row, col - 1)].visited:
             neighbors.append(("west", row, col - 1))
         return neighbors
 
