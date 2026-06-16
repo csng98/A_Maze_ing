@@ -7,33 +7,34 @@ def parse_config(filename: str) -> Dict[str, str]:
     Handles errors using try/except blocks.
     """
     config: Dict[str, str] = {}
-    
+
     try:
         config_file = open(filename, "r")
         line: str = config_file.readline()
-        
+
         while line != "":
             clean_line: str = line.strip()
-            
+
             # Ignoramos comentarios y lineas vacias
             if clean_line != "" and clean_line[0] != "#":
                 parts: List[str] = clean_line.split("=")
-                
+
                 if len(parts) == 2:
                     key: str = parts[0].strip()
                     value: str = parts[1].strip()
                     config[key] = value
-                    
+
             line = config_file.readline()
-            
+
         config_file.close()
     except Exception:
         print("Error: Could not read or find the config file.")
         return {}
-        
+
     try:
         # Comprobamos que el archivo tenga TODO lo necesario
-        required = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"]
+        required = ["WIDTH", "HEIGHT", "ENTRY",
+                    "EXIT", "OUTPUT_FILE", "PERFECT"]
         i: int = 0
         while i < len(required):
             if required[i] not in config:
@@ -44,13 +45,14 @@ def parse_config(filename: str) -> Dict[str, str]:
         height: int = int(config["HEIGHT"])
 
         if width < 0 or height < 0:
-            raise ValueError ("Width and height must be non-negative integers")
-        
-        exits: List[str] = config["EXIT"].split(',')
-        entries: List[str] = config["ENTRY"].split(',')
+            raise ValueError("Width and height must be non-negative integers")
 
-        exits: int = int(exits[0]), int(exits[1])
-        entries: int = int(entries[0]), int(entries[1])
+        exits: tuple[int, int] = (
+            int(config["EXIT"].split(',')[0]),
+            int(config["EXIT"].split(',')[1]))
+        entries: tuple[int, int] = (
+            int(config["ENTRY"].split(',')[0]),
+            int(config["ENTRY"].split(',')[1]))
 
         if exits[0] == entries[0] and exits[1] == entries[1]:
             raise ValueError("Entry and exit cannot be the same cell")
@@ -64,13 +66,12 @@ def parse_config(filename: str) -> Dict[str, str]:
             raise ValueError("Exit coordinates are out of bounds")
         if entries[0] >= width or entries[1] >= height:
             raise ValueError("Entry coordinates are out of bounds")
-        
+
         is_perfect: str = config["PERFECT"]
 
         if is_perfect != "True" and is_perfect != "False":
             raise ValueError("PERFECT key must be bolean")
 
-        
         return config
 
     except Exception as e:

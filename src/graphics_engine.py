@@ -7,6 +7,7 @@ from typing import List
 
 class MazeWindow:
     """Manages the graphic rendering and keyboard events of the game."""
+
     def __init__(self, config: Dict[str, str], maze: Any) -> None:
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
@@ -30,7 +31,8 @@ class MazeWindow:
         self.wall_color: int = 0xFFFFFF
         self.show_solution: bool = False
 
-        self.win = self.mlx.mlx_new_window(self.ptr, self.width, self.height, "A-Maze-ing")
+        self.win = self.mlx.mlx_new_window(
+            self.ptr, self.width, self.height, "A-Maze-ing")
         self.img = self.mlx.mlx_new_image(self.ptr, self.width, self.height)
 
         result = self.mlx.mlx_get_data_addr(self.img)
@@ -50,7 +52,14 @@ class MazeWindow:
         self.addr[offset + 2] = (color >> 16) & 0xFF
         self.addr[offset + 3] = 0xFF
 
-    def draw_rect(self, start_x: int, start_y: int, width: int, height: int, color: int) -> None:
+    def draw_rect(
+            self,
+            start_x: int,
+            start_y: int,
+            width: int,
+            height: int,
+            color: int
+            ) -> None:
         """Draws a solid rectangle on the image."""
         y: int = 0
         while y < height:
@@ -95,7 +104,8 @@ class MazeWindow:
         if not self.show_solution:
             return
 
-        path = self.maze.find_path(self.player_r, self.player_c, self.exit_r, self.exit_c)
+        path = self.maze.find_path(
+            self.player_r, self.player_c, self.exit_r, self.exit_c)
         i: int = 0
         while i < len(path):
             r = path[i][0]
@@ -132,7 +142,8 @@ class MazeWindow:
 
     def change_maze_color(self) -> None:
         """Changes the wall color to a random one."""
-        colors = [0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF, 0xFFA500, 0x800080, 0x90EE90, 0xFFFFFF]
+        colors = [0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF,
+                  0xFFA500, 0x800080, 0x90EE90, 0xFFFFFF]
         self.wall_color = random.choice(colors)
         self.render_all()
 
@@ -149,7 +160,8 @@ class MazeWindow:
         print("Regenerating maze...")
         self.maze.create_empty_grid()
         if self.width > 10 and self.height > 10:
-            self.maze.draw_fortytwo(self.start_r, self.start_c, self.exit_r, self.exit_c)
+            self.maze.draw_fortytwo(
+                self.start_r, self.start_c, self.exit_r, self.exit_c)
         self.maze.carve_passages(self.start_r, self.start_c)
         self.maze.calculate_hex_for_all()
 
