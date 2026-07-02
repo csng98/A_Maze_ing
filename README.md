@@ -42,12 +42,16 @@ OUTPUT_FILE=maze.txt
 
 # Structural constraint
 PERFECT=True
+
+# Optional seed
+SEED=42
 ```
 
 ### Constraints & Validations Enforced
 * `WIDTH` and `HEIGHT` must be positive integers.
 * `ENTRY` and `EXIT` must fall within the bounds of the coordinate grid and cannot point to the exact same cell.
 * `PERFECT` must be explicitly declared as a boolean token (`True` or `False`).
+* `SEED` is optional. When provided, it must be a valid integer and ensures the same maze is generated every time the same configuration is used.
 * Any lines initiated by `#` or containing empty spaces are discarded by the engine.
 
 ---
@@ -61,7 +65,7 @@ PERFECT=True
 
 ### Compilation and Execution
 
-The project is entirely managed using an English-translated `Makefile`.
+The project is entirely managed using a `Makefile`.
 
 ```bash
 # Install dependencies and set up the Python virtual environment sandbox
@@ -105,6 +109,19 @@ The architecture separates concerns cleanly to maximize code reusability:
 * **`Mlx` C-Bridge (`mlx.py`):** The comprehensive `ctypes` wrapper wraps low-level graphics pointers into a native Python object model. This wrapper can be dropped unchanged into any separate Python project requiring high-performance pixel drawing without raw C dependency overhead.
 * **`parse_config` Engine (`config_parser.py`):** A bulletproof configuration file reader equipped with defensive bounds-checking and string separation logic that can handle initialization parameters for any grid-based system.
 * **`Cell` Matrix Architecture:** The coordinate-based structural nodes present inside `mazegen.py` utilize an isolated direction mapping scheme that can serve as the foundational backbone for alternative pathfinding grids or puzzle games.
+* **Reusable package:** The project can be packaged and installed as a standard Python module.
+
+	1. `pip install build`
+	2. `python3 -m build`
+
+	The build process uses the `pyproject.toml` file located at the root of the repository to generate both the `.tar.gz` (source distribution) and `.whl` (wheel distribution) files.
+
+	The `pyproject.toml` file defines the package metadata and build configuration:
+
+	* **`[build-system]`** – Specifies the build tool (`setuptools`) and the backend used to create the package.
+	* **`[project]`** – Contains the package metadata, including its name, version, description, authors, README, and the minimum supported Python version.
+	* **`[tool.setuptools]`** – Configures how `setuptools` discovers the package, indicating that the source code is located in the `src` directory and that `mazegen.py` is the module to package.
+
 
 ---
 
