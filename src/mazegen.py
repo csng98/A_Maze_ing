@@ -37,6 +37,9 @@ class MazeGenerator:
         if self.seed is not None:
             random.seed(self.seed)
 
+        if width < 0 or height < 0:
+            raise ValueError("Width and height must be non-negative integers")
+
     def create_empty_grid(self) -> None:
         """Initializes the grid with solid walls."""
         row: int = 0
@@ -66,6 +69,10 @@ class MazeGenerator:
 
     def carve_passages(self, start_row: int, start_col: int) -> None:
         """Excavates the maze paths using a backtracking algorithm."""
+
+        if (start_row, start_col) not in self.cells:
+            raise ValueError("Start coordinates are outside the maze bounds.")
+
         stack: List[Tuple[int, int]] = []
         self.cells[(start_row, start_col)].visited = True
         stack.append((start_row, start_col))
@@ -142,7 +149,10 @@ class MazeGenerator:
 
         return directions
 
-    def save_to_file(self, filename: str, config: Dict[str, str]) -> None:
+    def save_to_file(self, filename: str,
+                     start_r: int, start_c: int,
+                     exit_r: int, exit_c: int
+                     ) -> None:
         """Saves the maze, entry/exit coordinates, and solution
         path to a text file."""
         try:
@@ -159,19 +169,8 @@ class MazeGenerator:
                 row += 1
 
             f.write("\n")
-
-            entry_str = config["ENTRY"]
-            exit_str = config["EXIT"]
-            f.write(entry_str + "\n")
-            f.write(exit_str + "\n")
-
-            entry_cords = entry_str.split(',')
-            exit_cords = exit_str.split(',')
-
-            start_c = int(entry_cords[0])
-            start_r = int(entry_cords[1])
-            exit_c = int(exit_cords[0])
-            exit_r = int(exit_cords[1])
+            f.write(str(start_r) + "," + str(start_c) + "\n")
+            f.write(str(exit_r) + "," + str(exit_c) + "\n")
 
             path = self.find_path(start_r, start_c, exit_r, exit_c)
             directions = self.path_to_directions(path)
@@ -243,6 +242,14 @@ class MazeGenerator:
             end_c: int
             ) -> List[Tuple[int, int]]:
         """Finds the solution path from entry to exit using a BFS approach."""
+
+        if start_r == end_r and start_c == end_c:
+            raise ValueError("Entry and exit cannot be the same cell")
+        if (start_r, start_c) not in self.cells:
+            raise ValueError("Entry coordinates are outside the maze bounds")
+        if (end_r, end_c) not in self.cells:
+            raise ValueError("Exit coordinates are outside the maze bounds")
+
         keys: List[Tuple[int, int]] = list(self.cells.keys())
         i: int = 0
         while i < len(keys):

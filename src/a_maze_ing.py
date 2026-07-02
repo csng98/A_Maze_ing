@@ -19,6 +19,7 @@ def main() -> None:
     height = int(config_data["HEIGHT"])
     entry_cords = config_data["ENTRY"].split(',')
     exit_cords = config_data["EXIT"].split(',')
+    filename: str = config_data["OUTPUT_FILE"]
 
     is_perfect: bool = config_data["PERFECT"] == "True"
 
@@ -43,6 +44,7 @@ def main() -> None:
     if not maze.perfect:
         maze.create_cycles()
     maze.calculate_hex_for_all()
+    maze.save_to_file(filename, start_c, start_r, exit_c, exit_r)
 
     print("\n--- CONTROLS ---\n")
     print("[W, A, S, D] -> Move Player")

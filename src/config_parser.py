@@ -44,6 +44,8 @@ def parse_config(filename: str) -> Dict[str, str]:
 
         if width < 0 or height < 0:
             raise ValueError("Width and height must be non-negative integers")
+        if width > 30 or height > 30:
+            raise ValueError("Width and height must be less than 30 cells")
 
         exits: tuple[int, int] = (
             int(config["EXIT"].split(',')[0]),
