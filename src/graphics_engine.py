@@ -3,7 +3,6 @@ from mlx import Mlx
 from typing import Dict
 from typing import Any
 from typing import List
-from mazegen import MazeGenerator
 
 
 class MazeWindow:
@@ -13,7 +12,6 @@ class MazeWindow:
         self.mlx = Mlx()
         self.ptr = self.mlx.mlx_init()
 
-        # Ajustamos inicio y fin leyendo el config
         entry_cords: List[str] = config["ENTRY"].split(',')
         goal_cords: List[str] = config["EXIT"].split(',')
 
@@ -130,7 +128,6 @@ class MazeWindow:
         self.player_r += move_r
         self.player_c += move_c
 
-        # Volvemos a pintar cosas en el orden correcto
         if self.show_solution:
             self.draw_path()
 
@@ -140,7 +137,7 @@ class MazeWindow:
         self.mlx.mlx_put_image_to_window(self.ptr, self.win, self.img, 0, 0)
 
         if self.player_c == self.exit_c and self.player_r == self.exit_r:
-            print("BINGO! Maze completed!")
+            print("\033[92mBINGO! Maze completed!\033[0m")
             self.clean_exit()
 
     def change_maze_color(self) -> None:
@@ -160,7 +157,7 @@ class MazeWindow:
 
     def regenerate_maze(self) -> None:
         """Creates a completely new maze and restarts the game."""
-        print("Regenerating maze...")
+        print("\033[31mRegenerating maze...\033[0m")
         self.maze.create_empty_grid()
         if self.width > 10 and self.height > 10:
             self.maze.draw_fortytwo(
@@ -194,17 +191,15 @@ class MazeWindow:
 
     def handle_keypress(self, key: int, param: Any) -> None:
         """Maps keyboard inputs to game actions."""
-        # 1, 2, 3, 4 menus
-        if key == 49:    # '1'
+        if key == 49:
             self.regenerate_maze()
-        elif key == 50:  # '2'
+        elif key == 50:
             self.toggle_path()
-        elif key == 51:  # '3'
+        elif key == 51:
             self.change_maze_color()
-        elif key == 52 or key == 65307:  # '4' or ESC
+        elif key == 65307:
             self.clean_exit()
-
-        # W, A, S, D player movement
+            print("\033[31mGame closed\033[0m")
         elif key == 119:
             self.move_player(-1, 0, "north")
         elif key == 115:
@@ -216,22 +211,16 @@ class MazeWindow:
 
     def handle_close(self, param: Any) -> None:
         self.clean_exit()
+        print("\033[31mGame closed\033[0m")
 
     def clean_exit(self) -> None:
         """Stops the MLX loop safely."""
-        # En lugar de matar el programa, le decimos al bucle de C que termine.
         self.mlx.mlx_loop_exit(self.ptr)
 
     def run(self) -> None:
         """Starts the MLX loop and cleans up memory after it finishes."""
         self.render_all()
-
-        # El programa se queda atrapado en esta linea mientras juegas
         self.mlx.mlx_loop(self.ptr)
-
-        # --- Cuando llamas a clean_exit(), el bucle de arriba se rompe ---
-        # --- y Python continua leyendo por aqui, cerrando todo limpiamente ---
-
         self.mlx.mlx_destroy_image(self.ptr, self.img)
         self.mlx.mlx_destroy_window(self.ptr, self.win)
         self.mlx.mlx_release(self.ptr)

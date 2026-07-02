@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
 import random
 
 
@@ -22,10 +22,20 @@ class Cell:
 class MazeGenerator:
     """Handles the creation, logic, and solving of the perfect maze."""
 
-    def __init__(self, height: int, width: int) -> None:
+    def __init__(
+            self, height: int,
+            width: int, perfect: bool,
+            seed: Optional[int] = None
+            ) -> None:
+
         self.height = height
         self.width = width
+        self.perfect = perfect
+        self.seed = seed
         self.cells: Dict[Tuple[int, int], Cell] = {}
+
+        if self.seed is not None:
+            random.seed(self.seed)
 
     def create_empty_grid(self) -> None:
         """Initializes the grid with solid walls."""
@@ -109,7 +119,6 @@ class MazeGenerator:
           cardinal directions."""
         directions: str = ""
 
-        # Si no hay camino o el camino es solo la celda de inicio
         if len(path) < 2:
             return directions
 
@@ -120,7 +129,6 @@ class MazeGenerator:
             next_r = path[i+1][0]
             next_c = path[i+1][1]
 
-            # Comparamos fila vieja vs nueva y columna vieja vs nueva
             if next_r > curr_r:
                 directions += "S"
             elif next_r < curr_r:
@@ -140,7 +148,6 @@ class MazeGenerator:
         try:
             f = open(filename, "w")
 
-            # 1. Escribimos la cuadricula hexadecimal pura
             row: int = 0
             while row < self.height:
                 col: int = 0
@@ -151,16 +158,13 @@ class MazeGenerator:
                 f.write(line + "\n")
                 row += 1
 
-            # 2. El salto de linea en blanco que pide el PDF
             f.write("\n")
 
-            # 3. Coordenadas de entrada y salida
             entry_str = config["ENTRY"]
             exit_str = config["EXIT"]
             f.write(entry_str + "\n")
             f.write(exit_str + "\n")
 
-            # 4. Encontrar el camino, traducirlo a letras y guardarlo
             entry_cords = entry_str.split(',')
             exit_cords = exit_str.split(',')
 
@@ -175,7 +179,7 @@ class MazeGenerator:
             f.write(directions + "\n")
 
             f.close()
-            print(f"Maze successfully saved to {filename}")
+            print(f"\033[92mMaze successfully saved to {filename}\n\033[0m")
 
         except Exception as e:
             print(
@@ -192,11 +196,6 @@ class MazeGenerator:
         """Marks the center cells to form the '42' logo before carving."""
         mid_r: int = self.height // 2
         mid_c: int = self.width // 2
-
-        # SISTEMA DE SEGURIDAD:
-        # El 42 ocupa una 'caja' imaginaria desde mid_r - 2 hasta mid_r + 2
-        # y desde mid_c - 3 hasta mid_c + 3.
-        # Si la Entrada o Salida tocan esta caja, cancelamos el logo.
         if (
             (mid_r - 2 <= start_r <= mid_r + 2)
             and (mid_c - 3 <= start_c <= mid_c + 3)
@@ -208,7 +207,6 @@ class MazeGenerator:
         ):
             return
 
-        # Celdas para formar el numero "4"
         self.block_cell(mid_r, mid_c - 1)
         self.block_cell(mid_r, mid_c - 2)
         self.block_cell(mid_r, mid_c - 3)
@@ -219,7 +217,6 @@ class MazeGenerator:
         self.block_cell(mid_r - 1, mid_c - 1)
         self.block_cell(mid_r - 2, mid_c - 1)
 
-        # Celdas para formar el numero "2"
         self.block_cell(mid_r, mid_c + 1)
         self.block_cell(mid_r, mid_c + 2)
         self.block_cell(mid_r, mid_c + 3)
@@ -235,8 +232,6 @@ class MazeGenerator:
     def block_cell(self, r: int, c: int) -> None:
         """Helper function to mark a cell as visited to block the topo."""
         if (r, c) in self.cells:
-            # Al poner visited en True, el topo pensara que ya paso por ahi
-            # y no destruira sus paredes, dejandolo como un bloque macizo
             self.cells[(r, c)].visited = True
             self.cells[(r, c)].is_42 = True
 
@@ -254,11 +249,11 @@ class MazeGenerator:
             self.cells[keys[i]].visited = False
             i += 1
 
-        stack: List[List[Tuple[int, int]]] = [[(start_r, start_c)]]
+        queue: List[List[Tuple[int, int]]] = [[(start_r, start_c)]]
         self.cells[(start_r, start_c)].visited = True
 
-        while len(stack) > 0:
-            current_path = stack.pop()
+        while len(queue) > 0:
+            current_path = queue.pop(0)
             current_node = current_path[-1]
             r = current_node[0]
             c = current_node[1]
@@ -272,24 +267,74 @@ class MazeGenerator:
                 self.cells[(r-1, c)].visited = True
                 new_path = list(current_path)
                 new_path.append((r-1, c))
-                stack.append(new_path)
+                queue.append(new_path)
 
             if cell.walls["south"] == 0 and not self.cells[(r+1, c)].visited:
                 self.cells[(r+1, c)].visited = True
                 new_path = list(current_path)
                 new_path.append((r+1, c))
-                stack.append(new_path)
+                queue.append(new_path)
 
             if cell.walls["east"] == 0 and not self.cells[(r, c+1)].visited:
                 self.cells[(r, c+1)].visited = True
                 new_path = list(current_path)
                 new_path.append((r, c+1))
-                stack.append(new_path)
+                queue.append(new_path)
 
             if cell.walls["west"] == 0 and not self.cells[(r, c-1)].visited:
                 self.cells[(r, c-1)].visited = True
                 new_path = list(current_path)
                 new_path.append((r, c-1))
-                stack.append(new_path)
+                queue.append(new_path)
 
         return []
+
+    def create_cycles(self) -> None:
+        """Removes random walls to create loops, making an imperfect maze."""
+        num_cycles: int = (self.width * self.height) // 20
+        if num_cycles < 1:
+            num_cycles = 1
+
+        i: int = 0
+        directions: List[str] = ["north", "south", "east", "west"]
+
+        while i < num_cycles:
+            r: int = random.randint(0, self.height - 1)
+            c: int = random.randint(0, self.width - 1)
+            direction: str = random.choice(directions)
+
+            if self.cells[(r, c)].is_42:
+                continue
+
+            broken: bool = False
+
+            if (direction == "north" and r > 0
+                    and not self.cells[(r - 1, c)].is_42):
+                if self.cells[(r, c)].walls["north"] == 1:
+                    self.cells[(r, c)].walls["north"] = 0
+                    self.cells[(r - 1, c)].walls["south"] = 0
+                    broken = True
+
+            elif (direction == "south" and r < self.height - 1
+                  and not self.cells[(r + 1, c)].is_42):
+                if self.cells[(r, c)].walls["south"] == 1:
+                    self.cells[(r, c)].walls["south"] = 0
+                    self.cells[(r + 1, c)].walls["north"] = 0
+                    broken = True
+
+            elif (direction == "east" and c < self.width - 1
+                  and not self.cells[(r, c + 1)].is_42):
+                if self.cells[(r, c)].walls["east"] == 1:
+                    self.cells[(r, c)].walls["east"] = 0
+                    self.cells[(r, c + 1)].walls["west"] = 0
+                    broken = True
+
+            elif (direction == "west" and c > 0
+                  and not self.cells[(r, c - 1)].is_42):
+                if self.cells[(r, c)].walls["west"] == 1:
+                    self.cells[(r, c)].walls["west"] = 0
+                    self.cells[(r, c - 1)].walls["east"] = 0
+                    broken = True
+
+            if broken:
+                i += 1

@@ -1,15 +1,12 @@
-# Color codes for clean terminal output
 CYAN = \\033[1;36m
 RESET = \\033[0;0m
 RED = \\033[0;31m
 GREEN = \\033[0;32m
 
-# Environment configuration
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
 
-# Primary execution files
 MAIN = src/a_maze_ing.py
 CONFIG = config.txt
 
@@ -44,41 +41,31 @@ run: install
 	@echo "$(CYAN)Starting the interactive maze...$(RESET)"
 	@$(PYTHON) $(MAIN) $(CONFIG)
 
-# Run the script with Python's built-in interactive debugger (pdb)
 debug: install
 	@echo "$(CYAN)Launching program in debug mode via pdb...$(RESET)"
 	@$(PYTHON) -m pdb $(MAIN) $(CONFIG)
 
-# Code Quality & Validation Rules
-
-# Standard lint verification
 lint: install
 	@echo "$(CYAN)Running standard linting checks (flake8 + mypy)...$(RESET)"
 	@$(PYTHON) -m flake8 . --exclude=venv,src/mlx
 	@$(PYTHON) -m mypy . --exclude="venv|mlx" --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
-# Enhanced checking lint target
 lint-strict: install
 	@echo "$(CYAN)Running strict compliance checks (flake8 + mypy --strict)...$(RESET)"
 	@$(PYTHON) -m flake8 . --exclude=venv,src/mlx
 	@$(PYTHON) -m mypy . --exclude="venv|mlx" --strict
 
-# Cleanup management rules
-
-# 1. Clean: Remove temporary files, python cache folders, and static analyzer footprints
 clean:
 	@echo "$(RED)Purging internal cache files and runtime footprints...(__pycache__, etc.)...$(RESET)"
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -type f -name "*.pyc" -delete
 	@rm -rf .mypy_cache .pytest_cache
 
-# 2. Fclean: Complete system wipe (caches, virtual sandbox environments, and exported map files)
 fclean: clean
 	@echo "$(RED)Dismantling virtual environment and clearing exported maze files...$(RESET)"
 	@rm -rf $(VENV)
 	@rm -f maze.txt
 
-# 3. Re: Reset the repository state completely and re-verify development environment
 re: fclean all
 
 .PHONY: all banner install run debug lint lint-strict clean fclean re

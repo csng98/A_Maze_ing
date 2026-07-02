@@ -15,7 +15,6 @@ def parse_config(filename: str) -> Dict[str, str]:
         while line != "":
             clean_line: str = line.strip()
 
-            # Ignoramos comentarios y lineas vacias
             if clean_line != "" and clean_line[0] != "#":
                 parts: List[str] = clean_line.split("=")
 
@@ -32,7 +31,6 @@ def parse_config(filename: str) -> Dict[str, str]:
         return {}
 
     try:
-        # Comprobamos que el archivo tenga TODO lo necesario
         required = ["WIDTH", "HEIGHT", "ENTRY",
                     "EXIT", "OUTPUT_FILE", "PERFECT"]
         i: int = 0
@@ -70,7 +68,12 @@ def parse_config(filename: str) -> Dict[str, str]:
         is_perfect: str = config["PERFECT"]
 
         if is_perfect != "True" and is_perfect != "False":
-            raise ValueError("PERFECT key must be bolean")
+            raise ValueError("PERFECT key must be  a boolean")
+
+        if "SEED" in config:
+            if not config["SEED"].isdigit():
+                del config["SEED"]
+                raise ValueError("Warning: SEED is not a valid number.")
 
         return config
 

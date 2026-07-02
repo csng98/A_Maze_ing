@@ -2,6 +2,7 @@ import sys
 from config_parser import parse_config
 from graphics_engine import MazeWindow
 from mazegen import MazeGenerator
+from typing import Optional
 
 
 def main() -> None:
@@ -19,30 +20,36 @@ def main() -> None:
     entry_cords = config_data["ENTRY"].split(',')
     exit_cords = config_data["EXIT"].split(',')
 
+    is_perfect: bool = config_data["PERFECT"] == "True"
+
+    seed: Optional[int] = None
+    if "SEED" in config_data:
+        seed = int(config_data["SEED"])
+
     start_c = int(entry_cords[0])
     start_r = int(entry_cords[1])
     exit_c = int(exit_cords[0])
     exit_r = int(exit_cords[1])
 
-    maze = MazeGenerator(height, width)
+    maze = MazeGenerator(height, width, is_perfect, seed)
     maze.create_empty_grid()
-
-    print(f"Grid initialized with {len(maze.cells)} cells.")
 
     if width > 8 and height > 6:
         maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
     else:
-        print("error too small for 42")
+        print("\033[31merror making the 42\033[0m")
 
     maze.carve_passages(start_r, start_c)
+    if not maze.perfect:
+        maze.create_cycles()
     maze.calculate_hex_for_all()
 
-    print("\n--- CONTROLS ---")
+    print("\n--- CONTROLS ---\n")
     print("[W, A, S, D] -> Move Player")
     print("[1] -> Regenerate Maze")
     print("[2] -> Show/Hide Solution Path")
     print("[3] -> Change Color")
-    print("[4] -> Exit")
+    print("[Esc] -> Exit\n")
 
     game = MazeWindow(config_data, maze)
     game.run()
