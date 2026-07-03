@@ -156,9 +156,6 @@ class MazeGenerator:
         """Saves the maze, entry/exit coordinates, and solution
         path to a text file."""
         try:
-            f = open(filename, "w")
-
-            row: int = 0
             with open(filename, "w") as f:
                 row: int = 0
                 while row < self.height:
@@ -174,10 +171,10 @@ class MazeGenerator:
                 f.write(str(start_r) + "," + str(start_c) + "\n")
                 f.write(str(exit_r) + "," + str(exit_c) + "\n")
 
-            path = self.find_path(start_r, start_c, exit_r, exit_c)
-            directions = self.path_to_directions(path)
+                path = self.find_path(start_r, start_c, exit_r, exit_c)
+                directions = self.path_to_directions(path)
 
-            f.write(directions + "\n")
+                f.write(directions + "\n")
             print(f"\033[92mMaze successfully saved to {filename}\n\033[0m")
 
         except Exception as e:

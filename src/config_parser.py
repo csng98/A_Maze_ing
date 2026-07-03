@@ -9,23 +9,26 @@ def parse_config(filename: str) -> Dict[str, str]:
     config: Dict[str, str] = {}
 
     try:
-        config_file = open(filename, "r")
-        line: str = config_file.readline()
+        with open(filename, "r") as config_file:
+            line: str = config_file.readline()
 
-        while line != "":
-            clean_line: str = line.strip()
+            while line != "":
+                clean_line: str = line.strip()
 
-            if clean_line != "" and clean_line[0] != "#":
-                parts: List[str] = clean_line.split("=")
+                if clean_line != "" and clean_line[0] != "#":
+                    parts: List[str] = clean_line.split("=")
 
-                if len(parts) == 2:
-                    key: str = parts[0].strip()
-                    value: str = parts[1].strip()
-                    config[key] = value
-
-            line = config_file.readline()
-
-        config_file.close()
+                    if len(parts) == 2:
+                        key: str = parts[0].strip()
+                        value: str = parts[1].strip()
+                        config[key] = value
+                    else:
+                        raise ValueError(
+                            f"Invalid config format in line: {clean_line}")
+                line = config_file.readline()
+    except ValueError as e:
+        print(f"Config Error: {e}")
+        return {}
     except Exception:
         print("Error: Could not read or find the config file.")
         return {}

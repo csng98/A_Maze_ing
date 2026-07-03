@@ -1,4 +1,5 @@
 import sys
+import signal
 from config_parser import parse_config
 from graphics_engine import MazeWindow
 from mazegen import MazeGenerator
@@ -38,7 +39,7 @@ def main() -> None:
     if width > 8 and height > 6:
         maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
     else:
-        print("\033[31merror making the 42\033[0m")
+        print("\nMap too small for the 42 logo, skipping...")
 
     maze.carve_passages(start_r, start_c)
     if not maze.perfect:
@@ -58,4 +59,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     main()
