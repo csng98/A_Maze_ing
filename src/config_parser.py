@@ -23,7 +23,9 @@ def parse_config(filename: str) -> Dict[str, str]:
                         value: str = parts[1]
 
                         if " " in key or " " in value:
-                            raise ValueError(f"Spaces are not allowed in configuration lines: {clean_line}")
+                            raise ValueError(f"Spaces are not allowed in "
+                                             f"configuration lines: "
+                                             f"{clean_line}")
 
                         config[key] = value
                     else:
@@ -53,11 +55,13 @@ def parse_config(filename: str) -> Dict[str, str]:
             raise ValueError("Width and height must be non-negative integers")
         if width > 30 or height > 30:
             raise ValueError("Width and height must be less than 30 cells")
-        
+
         for key_name in ["ENTRY", "EXIT"]:
             val = config[key_name]
             if val.count(',') != 1 or not val.replace(',', '').isdigit():
-                raise ValueError(f"{key_name} must be strictly in 'number,number' format with no spaces or extra characters")
+                raise ValueError(f"{key_name} must be strictly"
+                                 f" in 'number,number'"
+                                 f" format with no spaces or extra characters")
 
         exits: tuple[int, int] = (
             int(config["EXIT"].split(',')[0]),
