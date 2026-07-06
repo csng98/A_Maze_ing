@@ -23,8 +23,8 @@ class MazeGenerator:
     """Handles the creation, logic, and solving of the perfect maze."""
 
     def __init__(
-            self, height: int,
-            width: int, perfect: bool,
+            self, height: int, width: int,
+            perfect: Optional[int],
             seed: Optional[int] = None
             ) -> None:
 
@@ -103,6 +103,10 @@ class MazeGenerator:
                 stack.append((next_row, next_col))
             else:
                 stack.pop()
+
+        if (self.perfect is not True):
+            self.create_cycles()
+            self.check_corners()
 
     def calculate_hex_for_all(self) -> None:
         """Calculates the hexadecimal representation of each cell's walls."""
@@ -342,3 +346,32 @@ class MazeGenerator:
 
             if broken:
                 i += 1
+
+    def check_corners(self) -> None:
+        """Ensures the four corners are open corridors
+        for a Pac-Man style board."""
+        corners = [
+            (0, 0, "south", (1, 0), "east", (0, 1)),
+            (0, self.width - 1, "south", (1, 0), "west", (0, -1)),
+            (self.height - 1, 0, "north", (-1, 0), "east", (0, 1)),
+            (self.height - 1, self.width - 1, "north", (-1, 0),
+             "west", (0, -1))
+        ]
+
+        for r, c, dir1, offset1, dir2, offset2 in corners:
+            cell = self.cells[(r, c)]
+
+            if cell.walls[dir1] == 1 and cell.walls[dir2] == 1:
+                chosen_dir, offset = random.choice([(dir1, offset1),
+                                                    (dir2, offset2)])
+                nr, nc = r + offset[0], c + offset[1]
+
+                cell.walls[chosen_dir] = 0
+                if chosen_dir == "north":
+                    self.cells[(nr, nc)].walls["south"] = 0
+                elif chosen_dir == "south":
+                    self.cells[(nr, nc)].walls["north"] = 0
+                elif chosen_dir == "east":
+                    self.cells[(nr, nc)].walls["west"] = 0
+                elif chosen_dir == "west":
+                    self.cells[(nr, nc)].walls["east"] = 0
