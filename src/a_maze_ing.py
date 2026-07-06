@@ -22,7 +22,7 @@ def main() -> None:
     exit_cords = config_data["EXIT"].split(',')
     filename: str = config_data["OUTPUT_FILE"]
 
-    # is_perfect: bool = config_data["PERFECT"] == "True"
+    is_perfect: bool = config_data["PERFECT"] == "True"
 
     seed: Optional[int] = None
     if "SEED" in config_data:
@@ -33,7 +33,7 @@ def main() -> None:
     exit_c = int(exit_cords[0])
     exit_r = int(exit_cords[1])
 
-    maze = MazeGenerator(height, width, seed)
+    maze = MazeGenerator(height, width, is_perfect, seed)
     maze.create_empty_grid()
 
     if width > 8 and height > 6:

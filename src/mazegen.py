@@ -24,7 +24,7 @@ class MazeGenerator:
 
     def __init__(
             self, height: int, width: int,
-            perfect: Optional[int],
+            perfect: Optional[bool],
             seed: Optional[int] = None
             ) -> None:
 
