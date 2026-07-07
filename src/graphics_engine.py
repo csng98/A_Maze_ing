@@ -128,17 +128,18 @@ class MazeWindow:
         self.player_r += move_r
         self.player_c += move_c
 
-        if self.show_solution:
-            self.draw_path()
-
-        self.draw_exit()
-        self.draw_player()
-
-        self.mlx.mlx_put_image_to_window(self.ptr, self.win, self.img, 0, 0)
-
         if self.player_c == self.exit_c and self.player_r == self.exit_r:
             print("\033[92mBINGO! Maze completed!\033[0m")
             self.clean_exit()
+            return
+
+        if self.show_solution:
+            self.render_all()
+        else:
+            self.draw_exit()
+            self.draw_player()
+            self.mlx.mlx_put_image_to_window(self.ptr,
+                                             self.win, self.img, 0, 0)
 
     def change_maze_color(self) -> None:
         """Changes the wall color to a random one."""
@@ -159,10 +160,10 @@ class MazeWindow:
         """Creates a completely new maze and restarts the game."""
         print("\033[31mRegenerating maze...\033[0m")
         self.maze.create_empty_grid()
-        if self.width > 10 and self.height > 10:
-            self.maze.draw_fortytwo(
-                self.start_r, self.start_c, self.exit_r, self.exit_c)
-        self.maze.carve_passages(self.start_r, self.start_c)
+        self.maze.draw_fortytwo(
+            self.start_r, self.start_c, self.exit_r, self.exit_c)
+        self.maze.carve_passages(self.start_r, self.start_c,
+                                 self.exit_r, self.exit_c)
         self.maze.calculate_hex_for_all()
         self.maze.save_to_file(
             self.config["OUTPUT_FILE"],
