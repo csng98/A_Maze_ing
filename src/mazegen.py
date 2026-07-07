@@ -105,7 +105,7 @@ class MazeGenerator:
                 stack.pop()
 
         if (self.perfect is not True):
-            self.create_cycles()
+            self.braid_maze()
             self.check_corners()
 
     def calculate_hex_for_all(self) -> None:
@@ -194,17 +194,25 @@ class MazeGenerator:
             exit_c: int
             ) -> None:
         """Marks the center cells to form the '42' logo before carving."""
+        if self.width <= 8 or self.height <= 6:
+            print("\033[33mMap too small for the 42 logo, skipping...\033[0m")
+            return
+
         mid_r: int = self.height // 2
         mid_c: int = self.width // 2
         if (
             (mid_r - 2 <= start_r <= mid_r + 2)
             and (mid_c - 3 <= start_c <= mid_c + 3)
         ):
+            print("\033[33mWarning: Entry coordinates conflict "
+                  "with the center area. Skipping '42' logo.\033[0m")
             return
         if (
             (mid_r - 2 <= exit_r <= mid_r + 2)
             and (mid_c - 3 <= exit_c <= mid_c + 3)
         ):
+            print("\033[33mWarning: Exit coordinates conflict "
+                  "with the center area. Skipping '42' logo.\033[0m")
             return
 
         self.block_cell(mid_r, mid_c - 1)
@@ -295,81 +303,66 @@ class MazeGenerator:
 
         return []
 
-    def create_cycles(self) -> None:
-        """Removes random walls to create loops, making an imperfect maze."""
-        num_cycles: int = (self.width * self.height) // 20
-        if num_cycles < 1:
-            num_cycles = 1
-
-        i: int = 0
-        directions: List[str] = ["north", "south", "east", "west"]
-
-        while i < num_cycles:
-            r: int = random.randint(0, self.height - 1)
-            c: int = random.randint(0, self.width - 1)
-            direction: str = random.choice(directions)
-
-            if self.cells[(r, c)].is_42:
-                continue
-
-            broken: bool = False
-
-            if (direction == "north" and r > 0
-                    and not self.cells[(r - 1, c)].is_42):
-                if self.cells[(r, c)].walls["north"] == 1:
-                    self.cells[(r, c)].walls["north"] = 0
-                    self.cells[(r - 1, c)].walls["south"] = 0
-                    broken = True
-
-            elif (direction == "south" and r < self.height - 1
-                  and not self.cells[(r + 1, c)].is_42):
-                if self.cells[(r, c)].walls["south"] == 1:
-                    self.cells[(r, c)].walls["south"] = 0
-                    self.cells[(r + 1, c)].walls["north"] = 0
-                    broken = True
-
-            elif (direction == "east" and c < self.width - 1
-                  and not self.cells[(r, c + 1)].is_42):
-                if self.cells[(r, c)].walls["east"] == 1:
-                    self.cells[(r, c)].walls["east"] = 0
-                    self.cells[(r, c + 1)].walls["west"] = 0
-                    broken = True
-
-            elif (direction == "west" and c > 0
-                  and not self.cells[(r, c - 1)].is_42):
-                if self.cells[(r, c)].walls["west"] == 1:
-                    self.cells[(r, c)].walls["west"] = 0
-                    self.cells[(r, c - 1)].walls["east"] = 0
-                    broken = True
-
-            if broken:
-                i += 1
-
     def check_corners(self) -> None:
-        """Ensures the four corners are open corridors
-        for a Pac-Man style board."""
+        """Strictly opens the four corners to the inside for a
+        Pac-Man style board."""
         corners = [
-            (0, 0, "south", (1, 0), "east", (0, 1)),
-            (0, self.width - 1, "south", (1, 0), "west", (0, -1)),
-            (self.height - 1, 0, "north", (-1, 0), "east", (0, 1)),
-            (self.height - 1, self.width - 1, "north", (-1, 0),
-             "west", (0, -1))
+            (0, 0, "south", 1, 0, "east", 0, 1),
+            (0, self.width - 1, "south", 1, self.width - 1,
+             "west", 0, self.width - 2),
+            (self.height - 1, 0, "north", self.height - 2, 0,
+             "east", self.height - 1, 1),
+            (self.height - 1, self.width - 1, "north", self.height - 2,
+             self.width - 1, "west", self.height - 1, self.width - 2)
         ]
 
-        for r, c, dir1, offset1, dir2, offset2 in corners:
-            cell = self.cells[(r, c)]
+        for r, c, dir1, nr1, nc1, dir2, nr2, nc2 in corners:
+            self.cells[(r, c)].walls[dir1] = 0
+            if dir1 == "north":
+                self.cells[(nr1, nc1)].walls["south"] = 0
+            elif dir1 == "south":
+                self.cells[(nr1, nc1)].walls["north"] = 0
+            elif dir1 == "east":
+                self.cells[(nr1, nc1)].walls["west"] = 0
+            elif dir1 == "west":
+                self.cells[(nr1, nc1)].walls["east"] = 0
 
-            if cell.walls[dir1] == 1 and cell.walls[dir2] == 1:
-                chosen_dir, offset = random.choice([(dir1, offset1),
-                                                    (dir2, offset2)])
-                nr, nc = r + offset[0], c + offset[1]
+            self.cells[(r, c)].walls[dir2] = 0
+            if dir2 == "north":
+                self.cells[(nr2, nc2)].walls["south"] = 0
+            elif dir2 == "south":
+                self.cells[(nr2, nc2)].walls["north"] = 0
+            elif dir2 == "east":
+                self.cells[(nr2, nc2)].walls["west"] = 0
+            elif dir2 == "west":
+                self.cells[(nr2, nc2)].walls["east"] = 0
 
-                cell.walls[chosen_dir] = 0
-                if chosen_dir == "north":
-                    self.cells[(nr, nc)].walls["south"] = 0
-                elif chosen_dir == "south":
-                    self.cells[(nr, nc)].walls["north"] = 0
-                elif chosen_dir == "east":
-                    self.cells[(nr, nc)].walls["west"] = 0
-                elif chosen_dir == "west":
-                    self.cells[(nr, nc)].walls["east"] = 0
+    def braid_maze(self) -> None:
+        """Removes dead ends by connecting them to neighbors,
+        automatically creating loops."""
+        directions = ["north", "south", "east", "west"]
+        offsets = {"north": (-1, 0), "south": (1, 0),
+                   "east": (0, 1), "west": (0, -1)}
+        opposites = {"north": "south", "south": "north",
+                     "east": "west", "west": "east"}
+
+        for (r, c), cell in self.cells.items():
+            if cell.is_42:
+                continue
+
+            closed_walls = [d for d in directions if cell.walls[d] == 1]
+
+            if len(closed_walls) == 3:
+                random.shuffle(closed_walls)
+                for wall_to_break in closed_walls:
+                    nr = r + offsets[wall_to_break][0]
+                    nc = c + offsets[wall_to_break][1]
+
+                    if (
+                        (nr, nc) in self.cells
+                        and not self.cells[(nr, nc)].is_42
+                    ):
+                        cell.walls[wall_to_break] = 0
+                        self.cells[(nr, nc)].walls[
+                            opposites[wall_to_break]] = 0
+                        break

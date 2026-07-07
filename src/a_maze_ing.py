@@ -36,10 +36,7 @@ def main() -> None:
     maze = MazeGenerator(height, width, is_perfect, seed)
     maze.create_empty_grid()
 
-    if width > 8 and height > 6:
-        maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
-    else:
-        print("\nMap too small for the 42 logo, skipping...")
+    maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
 
     maze.carve_passages(start_r, start_c)
     maze.calculate_hex_for_all()
