@@ -166,3 +166,9 @@ AI tools were utilized during the development lifecycle for specific optimizatio
 * **Algorithmic Structure Validation:** Employed to cross-examine binary wall masks and check validation ranges during manual string manipulation phases.
 * **Exploratory Architecture Breakdown:** Used to inspect byte allocation formulas within the custom shared image data wrapper arrays.
 * **Documentation Structuring:** Leveraged to organize raw source code requirements into a standardized, professional markdown presentation.
+
+---
+
+## License
+
+This project is open-source and available under the terms of the [MIT License](LICENSE.md). The official license template and terms were sourced from the [Open Source Initiative (OSI)](https://opensource.org/license/mit).
