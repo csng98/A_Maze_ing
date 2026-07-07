@@ -162,8 +162,7 @@ class MazeWindow:
         self.maze.create_empty_grid()
         self.maze.draw_fortytwo(
             self.start_r, self.start_c, self.exit_r, self.exit_c)
-        self.maze.carve_passages(self.start_r, self.start_c,
-                                 self.exit_r, self.exit_c)
+        self.maze.carve_passages(self.start_r, self.start_c)
         self.maze.calculate_hex_for_all()
         self.maze.save_to_file(
             self.config["OUTPUT_FILE"],
