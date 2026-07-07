@@ -41,7 +41,7 @@ def parse_config(filename: str) -> Dict[str, str]:
 
     try:
         required = ["WIDTH", "HEIGHT", "ENTRY",
-                    "EXIT", "OUTPUT_FILE"]
+                    "EXIT", "OUTPUT_FILE", "PERFECT"]
         i: int = 0
         while i < len(required):
             if required[i] not in config:

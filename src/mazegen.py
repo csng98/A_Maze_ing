@@ -230,7 +230,7 @@ class MazeGenerator:
         self.block_cell(mid_r + 2, mid_c + 3)
 
     def block_cell(self, r: int, c: int) -> None:
-        """Helper function to mark a cell as visited to block the topo."""
+        """Helper function to mark a cell as visited to block"""
         if (r, c) in self.cells:
             self.cells[(r, c)].visited = True
             self.cells[(r, c)].is_42 = True
@@ -244,8 +244,6 @@ class MazeGenerator:
             ) -> List[Tuple[int, int]]:
         """Finds the solution path from entry to exit using a BFS approach."""
 
-        if start_r == end_r and start_c == end_c:
-            raise ValueError("Entry and exit cannot be the same cell")
         if (start_r, start_c) not in self.cells:
             raise ValueError("Entry coordinates are outside the maze bounds")
         if (end_r, end_c) not in self.cells:
