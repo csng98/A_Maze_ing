@@ -83,10 +83,10 @@ def parse_config(filename: str) -> Dict[str, str]:
         if entries[0] >= width or entries[1] >= height:
             raise ValueError("Entry coordinates are out of bounds")
 
-        # is_perfect: str = config["PERFECT"]
+        is_perfect: str = config["PERFECT"]
 
-        # if is_perfect != "True" and is_perfect != "False":
-        #     raise ValueError("PERFECT key must be  a boolean")
+        if is_perfect != "True" and is_perfect != "False":
+            raise ValueError("PERFECT key must be a boolean")
 
         if "SEED" in config:
             if not config["SEED"].isdigit():

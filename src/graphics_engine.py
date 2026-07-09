@@ -3,7 +3,6 @@ from mlx import Mlx
 from typing import Dict
 from typing import Any
 from typing import List
-import time
 
 
 class MazeWindow:
@@ -115,12 +114,8 @@ class MazeWindow:
             x_pixel: int = (c * 50) + 20
             y_pixel: int = (r * 50) + 20
             self.draw_rect(x_pixel, y_pixel, 10, 10, 0x00BFFF)
-            self.draw_player() 
+            self.draw_player()
             self.draw_exit()
-            self.mlx.mlx_put_image_to_window(self.ptr, self.win, self.img, 0, 0)
-            if hasattr(self.mlx, 'mlx_do_sync'):
-                self.mlx.mlx_do_sync(self.ptr)
-            time.sleep(0.015)
             i += 1
 
     def move_player(self, move_r: int, move_c: int, direction: str) -> None:
@@ -165,7 +160,7 @@ class MazeWindow:
 
     def regenerate_maze(self) -> None:
         """Creates a completely new maze and restarts the game."""
-        print("\033[31mRegenerating maze...\033[0m")
+        print("\033[33mRegenerating maze...\033[0m")
         self.maze.create_empty_grid()
         self.maze.draw_fortytwo(
             self.start_r, self.start_c, self.exit_r, self.exit_c)
