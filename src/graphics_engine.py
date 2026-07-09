@@ -168,8 +168,8 @@ class MazeWindow:
         self.maze.calculate_hex_for_all()
         self.maze.save_to_file(
             self.config["OUTPUT_FILE"],
-            self.start_c, self.start_r,
-            self.exit_c, self.exit_r)
+            self.start_r, self.start_c,
+            self.exit_r, self.exit_c)
 
         self.player_c = self.start_c
         self.player_r = self.start_r

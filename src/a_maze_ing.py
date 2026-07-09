@@ -38,7 +38,7 @@ def main() -> None:
     maze.draw_fortytwo(start_r, start_c, exit_r, exit_c)
     maze.carve_passages(start_r, start_c)
     maze.calculate_hex_for_all()
-    maze.save_to_file(filename, start_c, start_r, exit_c, exit_r)
+    maze.save_to_file(filename, start_r, start_c, exit_r, exit_c)
 
     print("\n--- CONTROLS ---\n")
     print("[W, A, S, D] -> Move Player")
